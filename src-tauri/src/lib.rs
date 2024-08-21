@@ -16,7 +16,7 @@ struct AppState {
 impl AppState {
     pub fn new(pool: SqlitePool) -> Arc<Self> {
         Arc::new(Self {
-            db: Arc::new(Mutex::new(pool)),
+            db: Mutex::new(pool),
         })
     }
 }
@@ -39,13 +39,13 @@ pub fn run() {
             scope.allow_file(&db_path);
             scope.allow_directory(history_cache, true);
 
-            async_runtime::spawn(async move || {
-                let connection_string = format!("sqlite:///{}", db_path).as_str();
-                tracing::info!("Connecting to database {:?}", connection_string);
-                let pool = SqlitePool::connect(connection_string)
+            async_runtime::block_on(async {
+                let connection_string = format!("sqlite:///{}", db_path.to_string_lossy());
+                tracing::info!("Connecting to database {}", &connection_string);
+                let pool = SqlitePool::connect(&connection_string)
                     .await
                     .expect("Couldn't establish connection to the database.");
-                sqlx::migrate!("migrations")
+                sqlx::migrate!("./migrations")
                     .run(&pool)
                     .await
                     .expect("Failed to migrate database");
