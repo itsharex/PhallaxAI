@@ -27,4 +27,9 @@ uuid = "1.10.0"
 anyhow = "1.0.86"
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
-ollama-rs = { version = "0.2.0", features = ["function-calling", "chat-history"] } 
+ollama-rs = { version = "0.2.0", features = [
+  "function-calling",
+  "chat-history",
+] }
+tauri-plugin-fs = "2.0.0-rc"
+sqlx = { version = "0.8.0", features = ["sqlite"] }
