@@ -1,5 +1,5 @@
 use sqlx::SqlitePool;
-use std::sync::Arc;
+use std::{path::PathBuf, str::FromStr, sync::Arc};
 use tauri::{async_runtime, path::BaseDirectory, Manager};
 use tauri_plugin_fs::FsExt;
 use tokio::sync::Mutex;
@@ -23,25 +23,34 @@ impl AppState {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let _ = span!(Level::TRACE, "");
+    tracing_subscriber::fmt::init();
+    let _ = span!(Level::INFO, "Phallax");
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
         .setup(|app| {
             let db_path = app
                 .path()
-                .resolve("phallax.db", BaseDirectory::AppData)
+                .resolve("sqlite.db", BaseDirectory::AppData)
                 .expect("Could not resolve path");
             let history_cache = app
                 .path()
-                .resolve("phallax/history", BaseDirectory::AppCache)
+                .resolve(
+                    PathBuf::from_str("phallax").unwrap().join("history"),
+                    BaseDirectory::AppCache,
+                )
                 .expect("Could not resolve the cache dir.");
             let scope = app.fs_scope();
             scope.allow_file(&db_path);
             scope.allow_directory(history_cache, true);
 
+            if !db_path.exists() {
+                let _ = std::fs::File::create(&db_path).expect("Could not create database file");
+            }
+
+            let connection_string = format!("sqlite:{}", db_path.to_string_lossy());
+            tracing::info!("Connecting to database {}", &connection_string);
+
             async_runtime::block_on(async {
-                let connection_string = format!("sqlite:///{}", db_path.to_string_lossy());
-                tracing::info!("Connecting to database {}", &connection_string);
                 let pool = SqlitePool::connect(&connection_string)
                     .await
                     .expect("Couldn't establish connection to the database.");
