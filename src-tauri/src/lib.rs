@@ -9,8 +9,20 @@ mod commands {
     pub mod assistant;
 }
 
+mod ollama {
+    pub mod ai;
+    pub mod history;
+}
+
+mod database {
+    pub mod assistants;
+    pub mod configs;
+    pub mod history;
+    pub mod schemas;
+}
+
 struct AppState {
-    db: Mutex<SqlitePool>,
+    pub db: Mutex<SqlitePool>,
 }
 
 impl AppState {
