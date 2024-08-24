@@ -2,6 +2,7 @@ use crate::database::schemas::History;
 use chrono::SecondsFormat;
 use sqlx::SqlitePool;
 
+/// Insert a new history into the database
 pub async fn insert_history(pool: &SqlitePool, history: History) -> Result<(), sqlx::Error> {
     sqlx::query(
         r#"
@@ -28,12 +29,14 @@ pub async fn insert_history(pool: &SqlitePool, history: History) -> Result<(), s
     Ok(())
 }
 
+/// Get all history from the database
 pub async fn get_history(pool: &SqlitePool) -> Result<Vec<History>, sqlx::Error> {
     sqlx::query_as("SELECT * FROM history")
         .fetch_all(pool)
         .await
 }
 
+/// Get a history by its ID
 pub async fn get_history_by_id(pool: &SqlitePool, id: i64) -> Result<History, sqlx::Error> {
     sqlx::query_as::<sqlx::Sqlite, History>("SELECT * FROM history WHERE id = ?;")
         .bind(id)
@@ -41,6 +44,7 @@ pub async fn get_history_by_id(pool: &SqlitePool, id: i64) -> Result<History, sq
         .await
 }
 
+/// Get a history by its name
 pub async fn update_history(pool: &SqlitePool, history: History) -> Result<(), sqlx::Error> {
     sqlx::query(
         r#"
@@ -60,6 +64,7 @@ pub async fn update_history(pool: &SqlitePool, history: History) -> Result<(), s
     Ok(())
 }
 
+/// Delete a history by its ID
 pub async fn delete_history(pool: &SqlitePool, id: i64) -> Result<(), sqlx::Error> {
     sqlx::query("DELETE FROM history WHERE id = ?;")
         .bind(id)
