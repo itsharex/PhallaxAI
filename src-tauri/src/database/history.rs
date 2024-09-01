@@ -3,7 +3,7 @@ use chrono::SecondsFormat;
 use sqlx::SqlitePool;
 
 /// Insert a new history into the database
-pub async fn insert_history(pool: &SqlitePool, history: History) -> Result<(), sqlx::Error> {
+pub async fn insert_history(pool: &SqlitePool, history: History) -> anyhow::Result<()> {
     sqlx::query(
         r#"
         INSERT INTO history (file_id, name, assistant_id, created_at, updated_at)
@@ -30,22 +30,26 @@ pub async fn insert_history(pool: &SqlitePool, history: History) -> Result<(), s
 }
 
 /// Get all history from the database
-pub async fn get_history(pool: &SqlitePool) -> Result<Vec<History>, sqlx::Error> {
-    sqlx::query_as("SELECT * FROM history")
+pub async fn get_history(pool: &SqlitePool) -> anyhow::Result<Vec<History>> {
+    let history = sqlx::query_as("SELECT * FROM history")
         .fetch_all(pool)
-        .await
+        .await?;
+
+    Ok(history)
 }
 
 /// Get a history by its ID
-pub async fn get_history_by_id(pool: &SqlitePool, id: i64) -> Result<History, sqlx::Error> {
-    sqlx::query_as::<sqlx::Sqlite, History>("SELECT * FROM history WHERE id = ?;")
+pub async fn get_history_by_id(pool: &SqlitePool, id: i64) -> anyhow::Result<History> {
+    let history = sqlx::query_as::<sqlx::Sqlite, History>("SELECT * FROM history WHERE id = ?;")
         .bind(id)
         .fetch_one(pool)
-        .await
+        .await?;
+
+    Ok(history)
 }
 
 /// Get a history by its name
-pub async fn update_history(pool: &SqlitePool, history: History) -> Result<(), sqlx::Error> {
+pub async fn update_history(pool: &SqlitePool, history: History) -> anyhow::Result<()> {
     sqlx::query(
         r#"
         UPDATE history
@@ -65,7 +69,7 @@ pub async fn update_history(pool: &SqlitePool, history: History) -> Result<(), s
 }
 
 /// Delete a history by its ID
-pub async fn delete_history(pool: &SqlitePool, id: i64) -> Result<(), sqlx::Error> {
+pub async fn delete_history(pool: &SqlitePool, id: i64) -> anyhow::Result<()> {
     sqlx::query("DELETE FROM history WHERE id = ?;")
         .bind(id)
         .execute(pool)
