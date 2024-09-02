@@ -31,6 +31,31 @@ pub struct Assistant {
     pub updated_at: DateTime<Utc>,
 }
 
+impl Default for Assistant {
+    fn default() -> Self {
+        Self {
+            id: 0,
+            name: "".to_string(),
+            instructions: "You are a helpful assistant.".to_string(),
+            config_id: 0,
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
+        }
+    }
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            id: 0,
+            temperature: 0.8,
+            num_ctx: 2048,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+        }
+    }
+}
+
 impl<'r> FromRow<'r, SqliteRow> for Config {
     fn from_row(row: &'r SqliteRow) -> Result<Self, sqlx::Error> {
         Ok(Self {
