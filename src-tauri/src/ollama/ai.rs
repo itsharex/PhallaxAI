@@ -5,7 +5,7 @@ use ollama_rs::{
 };
 use uuid::Uuid;
 
-struct Ai {
+pub struct Ai {
     client: Ollama,
     assistant: Assistant,
     config: Config,

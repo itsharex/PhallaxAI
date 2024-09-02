@@ -8,6 +8,7 @@ use tracing::{span, Level};
 
 mod commands {
     pub mod assistant;
+    pub mod database;
 }
 
 mod ollama {
