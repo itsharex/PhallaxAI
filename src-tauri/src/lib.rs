@@ -1,3 +1,4 @@
+use commands::{assistant, crud};
 use lazy_static::lazy_static;
 use sqlx::SqlitePool;
 use std::{path::PathBuf, str::FromStr, sync::Arc};
@@ -8,7 +9,7 @@ use tracing::{span, Level};
 
 mod commands {
     pub mod assistant;
-    pub mod database;
+    pub mod crud;
 }
 
 mod ollama {
@@ -90,7 +91,14 @@ pub fn run() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![commands::assistant::completion,])
+        .invoke_handler(tauri::generate_handler![
+            assistant::completion,
+            crud::insert_assistant,
+            crud::get_assistants,
+            crud::get_assistant_by_id,
+            crud::delete_assistant,
+            crud::update_assistant,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
