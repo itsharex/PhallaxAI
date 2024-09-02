@@ -1,3 +1,4 @@
+use lazy_static::lazy_static;
 use sqlx::SqlitePool;
 use std::{path::PathBuf, str::FromStr, sync::Arc};
 use tauri::{async_runtime, path::BaseDirectory, Manager};
@@ -33,6 +34,11 @@ impl AppState {
     }
 }
 
+lazy_static! {
+    static ref DB_PATH: Mutex<PathBuf> = Mutex::new(PathBuf::new());
+    static ref HISTORY_CACHE: Mutex<PathBuf> = Mutex::new(PathBuf::new());
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tracing_subscriber::fmt::init();
@@ -51,9 +57,10 @@ pub fn run() {
                     BaseDirectory::AppCache,
                 )
                 .expect("Could not resolve the cache dir.");
+
             let scope = app.fs_scope();
             scope.allow_file(&db_path);
-            scope.allow_directory(history_cache, true);
+            scope.allow_directory(&history_cache, true);
 
             if !db_path.exists() {
                 let _ = std::fs::File::create(&db_path).expect("Could not create database file");
@@ -63,6 +70,12 @@ pub fn run() {
             tracing::info!("Connecting to database {}", &connection_string);
 
             async_runtime::block_on(async {
+                let mut db_path_global = DB_PATH.lock().await;
+                *db_path_global = db_path.clone();
+
+                let mut history_cache_global = HISTORY_CACHE.lock().await;
+                *history_cache_global = history_cache.clone();
+
                 let pool = SqlitePool::connect(&connection_string)
                     .await
                     .expect("Couldn't establish connection to the database.");
