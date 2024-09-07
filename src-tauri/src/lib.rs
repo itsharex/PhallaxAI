@@ -98,6 +98,16 @@ pub fn run() {
             crud::get_assistant_by_id,
             crud::delete_assistant,
             crud::update_assistant,
+            crud::insert_config,
+            crud::get_configs,
+            crud::get_config_by_id,
+            crud::delete_config,
+            crud::update_config,
+            crud::insert_history,
+            crud::get_history,
+            crud::get_history_by_id,
+            crud::delete_history,
+            crud::update_history,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

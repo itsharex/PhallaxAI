@@ -3,8 +3,8 @@ use chrono::SecondsFormat;
 use sqlx::SqlitePool;
 
 /// Insert a new history into the database
-pub async fn insert_history(pool: &SqlitePool, history: History) -> anyhow::Result<()> {
-    sqlx::query(
+pub async fn insert_history(pool: &SqlitePool, history: History) -> anyhow::Result<i64> {
+    let res = sqlx::query(
         r#"
         INSERT INTO history (file_id, name, assistant_id, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?);
@@ -26,7 +26,7 @@ pub async fn insert_history(pool: &SqlitePool, history: History) -> anyhow::Resu
     .execute(pool)
     .await?;
 
-    Ok(())
+    Ok(res.last_insert_rowid())
 }
 
 /// Get all history from the database

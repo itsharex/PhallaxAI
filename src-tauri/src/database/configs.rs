@@ -1,7 +1,7 @@
 use crate::database::schemas::Config;
 use sqlx::SqlitePool;
 
-pub async fn get_config(pool: &SqlitePool, id: i64) -> anyhow::Result<Config> {
+pub async fn get_config_by_id(pool: &SqlitePool, id: i64) -> anyhow::Result<Config> {
     let config = sqlx::query_as::<sqlx::Sqlite, Config>("SELECT * FROM configs WHERE id = ?;")
         .bind(id)
         .fetch_one(pool)
