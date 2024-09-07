@@ -13,10 +13,6 @@ pub async fn init_ai(
     assistant: Assistant,
     config: Config,
 ) -> Result<(), String> {
-    let ai = state.ai.lock().await.take();
-    if ai.is_some() {
-        return Err("AI is already initialized".to_string());
-    }
     let new_ai = Ai::new(assistant, config).map_err(|e| e.to_string())?;
     state.ai.lock().await.replace(new_ai);
     Ok(())

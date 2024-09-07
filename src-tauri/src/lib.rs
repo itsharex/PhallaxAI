@@ -1,4 +1,4 @@
-use commands::{assistant, crud};
+use commands::{assistant, crud, history};
 use lazy_static::lazy_static;
 use sqlx::SqlitePool;
 use std::{path::PathBuf, str::FromStr, sync::Arc};
@@ -10,6 +10,7 @@ use tracing::{span, Level};
 mod commands {
     pub mod assistant;
     pub mod crud;
+    pub mod history;
 }
 
 mod ollama {
@@ -97,6 +98,8 @@ pub fn run() {
             assistant::completion,
             assistant::get_chat_history,
             assistant::init_ai,
+            history::load_history,
+            history::save_history,
             crud::insert_assistant,
             crud::get_assistants,
             crud::get_assistant_by_id,
