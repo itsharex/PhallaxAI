@@ -5,10 +5,10 @@ use sqlx::{sqlite::SqliteRow, FromRow, Row};
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct Config {
     pub id: i64,
-    pub temperature: f64,
-    pub num_ctx: i64,
-    pub frequency_penalty: f64,
-    pub presence_penalty: f64,
+    pub temperature: f32,
+    pub num_ctx: u32,
+    pub frequency_penalty: f32,
+    pub presence_penalty: f32,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
@@ -60,10 +60,10 @@ impl<'r> FromRow<'r, SqliteRow> for Config {
     fn from_row(row: &'r SqliteRow) -> Result<Self, sqlx::Error> {
         Ok(Self {
             id: row.try_get::<i64, _>(0)?,
-            temperature: row.try_get::<f64, _>(1)?,
-            num_ctx: row.try_get::<i64, _>(2)?,
-            frequency_penalty: row.try_get::<f64, _>(3)?,
-            presence_penalty: row.try_get::<f64, _>(4)?,
+            temperature: row.try_get::<f32, _>(1)?,
+            num_ctx: row.try_get::<u32, _>(2)?,
+            frequency_penalty: row.try_get::<f32, _>(3)?,
+            presence_penalty: row.try_get::<f32, _>(4)?,
         })
     }
 }

@@ -1,6 +1,9 @@
 use crate::database::schemas::{Assistant, Config};
 use ollama_rs::{
-    generation::chat::{request::ChatMessageRequest, ChatMessage},
+    generation::{
+        chat::{request::ChatMessageRequest, ChatMessage},
+        options::GenerationOptions,
+    },
     Ollama,
 };
 use uuid::Uuid;
@@ -47,13 +50,20 @@ impl Ai {
             )
         }
 
+        let options = GenerationOptions::default()
+            .repeat_penalty(self.config.frequency_penalty)
+            .temperature(self.config.temperature)
+            .tfs_z(self.config.presence_penalty)
+            .num_ctx(self.config.num_ctx);
+
         let res = self
             .client
             .send_chat_messages_with_history(
                 ChatMessageRequest::new(
                     model.to_string(),
                     vec![ChatMessage::user(prompt.to_string())],
-                ),
+                )
+                .options(options),
                 self.history_id.to_owned().unwrap(),
             )
             .await?;

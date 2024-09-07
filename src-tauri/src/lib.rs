@@ -26,12 +26,14 @@ mod database {
 
 struct AppState {
     pub db: Mutex<SqlitePool>,
+    pub ai: Mutex<Option<ollama::ai::Ai>>,
 }
 
 impl AppState {
     pub fn new(pool: SqlitePool) -> Arc<Self> {
         Arc::new(Self {
             db: Mutex::new(pool),
+            ai: Mutex::new(None),
         })
     }
 }
@@ -93,6 +95,8 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             assistant::completion,
+            assistant::get_chat_history,
+            assistant::init_ai,
             crud::insert_assistant,
             crud::get_assistants,
             crud::get_assistant_by_id,
