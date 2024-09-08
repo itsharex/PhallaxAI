@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",
-    "@kobalte/core": "^0.13.4",
+    "@kobalte/core": "^0.13.6",
     "@solidjs/router": "^0.14.1",
     "@solidjs/start": "^1.0.6",
     "@tauri-apps/api": "next",

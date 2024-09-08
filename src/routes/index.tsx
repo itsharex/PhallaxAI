@@ -1,11 +1,13 @@
-import { onMount } from "solid-js";
-import { Button } from "~/components/ui/button";
+import ChatWindow from "~/components/chat/window";
+import ChatInput from "~/components/chat/input";
 
 export default function Home() {
-  onMount(async () => {});
   return (
-    <main class="text-center mx-auto text-gray-700 p-4">
-      <Button>Test</Button>
+    <main class="flex flex-col h-screen">
+      <div class="flex flex-col h-full">
+        <ChatWindow />
+        <ChatInput />
+      </div>
     </main>
   );
 }
