@@ -1,5 +1,6 @@
 import ChatWindow from "~/components/chat/window";
 import ChatInput from "~/components/chat/input";
+import Error from "~/components/error/error";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
         <ChatWindow />
         <ChatInput />
       </div>
+      <Error />
     </main>
   );
 }

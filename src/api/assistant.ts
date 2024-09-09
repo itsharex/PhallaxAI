@@ -2,11 +2,11 @@ import { invoke } from "@tauri-apps/api/core";
 import type { Config, Assistant } from "../types";
 
 export async function initAssistant(
-  asssistant: Assistant,
+  assistant: Assistant,
   config: Config,
 ): Promise<void> {
   await invoke("init_ai", {
-    assistant: asssistant,
+    assistant: assistant,
     config: config,
   });
 }
