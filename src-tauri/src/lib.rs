@@ -1,7 +1,7 @@
 use commands::{assistant, crud, history};
 use lazy_static::lazy_static;
 use sqlx::SqlitePool;
-use std::{path::PathBuf, str::FromStr, sync::Arc};
+use std::{path::PathBuf, str::FromStr};
 use tauri::{async_runtime, path::BaseDirectory, Manager};
 use tauri_plugin_fs::FsExt;
 use tokio::sync::Mutex;
@@ -31,11 +31,11 @@ struct AppState {
 }
 
 impl AppState {
-    pub fn new(pool: SqlitePool) -> Arc<Self> {
-        Arc::new(Self {
+    pub fn new(pool: SqlitePool) -> Self {
+        Self {
             db: Mutex::new(pool),
             ai: Mutex::new(None),
-        })
+        }
     }
 }
 
@@ -50,6 +50,28 @@ pub fn run() {
     let _ = span!(Level::INFO, "Phallax");
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
+        .invoke_handler(tauri::generate_handler![
+            assistant::completion,
+            assistant::get_chat_history,
+            assistant::init_ai,
+            history::load_history,
+            history::save_history,
+            crud::insert_assistant,
+            crud::get_assistants,
+            crud::get_assistant_by_id,
+            crud::delete_assistant,
+            crud::update_assistant,
+            crud::insert_config,
+            crud::get_configs,
+            crud::get_config_by_id,
+            crud::delete_config,
+            crud::update_config,
+            crud::insert_history,
+            crud::get_history,
+            crud::get_history_by_id,
+            crud::delete_history,
+            crud::update_history,
+        ])
         .setup(|app| {
             let db_path = app
                 .path()
@@ -73,7 +95,6 @@ pub fn run() {
 
             let connection_string = format!("sqlite:{}", db_path.to_string_lossy());
             tracing::info!("Connecting to database {}", &connection_string);
-
             async_runtime::block_on(async {
                 let mut db_path_global = DB_PATH.lock().await;
                 *db_path_global = db_path.clone();
@@ -94,28 +115,6 @@ pub fn run() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![
-            assistant::completion,
-            assistant::get_chat_history,
-            assistant::init_ai,
-            history::load_history,
-            history::save_history,
-            crud::insert_assistant,
-            crud::get_assistants,
-            crud::get_assistant_by_id,
-            crud::delete_assistant,
-            crud::update_assistant,
-            crud::insert_config,
-            crud::get_configs,
-            crud::get_config_by_id,
-            crud::delete_config,
-            crud::update_config,
-            crud::insert_history,
-            crud::get_history,
-            crud::get_history_by_id,
-            crud::delete_history,
-            crud::update_history,
-        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

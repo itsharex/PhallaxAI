@@ -5,14 +5,15 @@ use crate::{
 };
 
 use ollama_rs::generation::chat::ChatMessage;
-use tauri::State;
+use tauri::Manager;
 
 #[tauri::command(rename_all = "snake_case")]
 pub async fn init_ai(
-    state: State<'_, AppState>,
+    app: tauri::AppHandle,
     assistant: Assistant,
     config: Config,
 ) -> Result<(), String> {
+    let state = app.state::<AppState>();
     let new_ai = Ai::new(assistant, config).map_err(|e| e.to_string())?;
     state.ai.lock().await.replace(new_ai);
     Ok(())
@@ -20,12 +21,13 @@ pub async fn init_ai(
 
 #[tauri::command(async, rename_all = "snake_case")]
 pub async fn completion(
-    state: State<'_, AppState>,
+    app: tauri::AppHandle,
     model: String,
     prompt: String,
     assistant: Assistant,
     config: Config,
 ) -> Result<String, String> {
+    let state = app.state::<AppState>();
     let mut ai = state.ai.lock().await.take();
 
     if ai.is_none() {
@@ -44,7 +46,8 @@ pub async fn completion(
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub async fn get_chat_history(state: State<'_, AppState>) -> Result<Vec<ChatMessage>, String> {
+pub async fn get_chat_history(app: tauri::AppHandle) -> Result<Vec<ChatMessage>, String> {
+    let state = app.state::<AppState>();
     let mut ai = state.ai.lock().await;
     if ai.is_none() {
         return Err("AI is not initialized".to_string());

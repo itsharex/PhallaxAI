@@ -2,7 +2,7 @@ import { createEffect, createSignal } from "solid-js";
 import { Button } from "~/components/ui/button";
 import { TextArea } from "~/components/ui/textarea";
 import { TextFieldRoot } from "~/components/ui/textfield";
-import { completion } from "~/api/assistant";
+import { completion, initAssistant } from "~/api/assistant";
 import { state, setState, setError } from "~/state";
 
 export default function ChatInput() {
@@ -13,6 +13,8 @@ export default function ChatInput() {
     const userMessage = prompt();
     const assistant = state.assistant;
     const config = state.config;
+    if (!assistant || !config) return;
+    await initAssistant(assistant, config);
     if (clear() && userMessage && assistant && config) {
       setState({ prompt: userMessage });
       try {

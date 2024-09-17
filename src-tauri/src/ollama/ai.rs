@@ -8,6 +8,7 @@ use ollama_rs::{
 };
 use uuid::Uuid;
 
+#[derive(Debug)]
 pub struct Ai {
     client: Ollama,
     assistant: Assistant,
