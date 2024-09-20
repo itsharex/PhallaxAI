@@ -83,6 +83,8 @@ mod tests {
         let assistant = Assistant::default();
         let mut ai = Ai::new(assistant, config).unwrap();
         let completion = ai.completion("llama3.1", "Hello.").await;
+
+        dbg!(&completion); // Log the result of the completion call
         assert!(completion.is_ok(), "{:?}", completion);
         assert!(ai.history_id.is_some(), "{:?}", ai.history_id);
     }

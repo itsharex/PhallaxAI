@@ -5,6 +5,7 @@ export async function initAssistant(
   assistant: Assistant,
   config: Config,
 ): Promise<void> {
+  console.log("initAssistant", assistant, config);
   await invoke("init_ai", {
     assistant: assistant,
     config: config,

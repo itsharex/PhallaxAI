@@ -15,7 +15,9 @@ export default function ChatInput() {
     const config = state.config;
     if (!assistant || !config) return;
     await initAssistant(assistant, config);
-    if (clear() && userMessage && assistant && config) {
+    console.log(!clear() && userMessage && assistant && config);
+    if (!clear() && userMessage && assistant && config) {
+      console.log("Sending user message:", userMessage);
       setState({ prompt: userMessage });
       try {
         const assistantMessage = await completion(

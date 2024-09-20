@@ -3,17 +3,19 @@ import { createStore } from "solid-js/store";
 import type { State } from "./types";
 
 export const [state, setState] = createStore<State>({
-  model: "",
+  model: "wizard-vicuna-uncensored",
   prompt: "",
   response: "",
   assistant: {
-    name: "wizard-vicuna-uncensored:13B",
+    id: 0,
+    name: "wizard-vicuna-uncensored",
     instructions: "You are a helpful assistant.",
-    config_id: 1,
-    created_at: "",
-    updated_at: "",
+    config_id: 0,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
   config: {
+    id: 0,
     num_ctx: 2048,
     temperature: 0.8,
     frequency_penalty: 0.0,

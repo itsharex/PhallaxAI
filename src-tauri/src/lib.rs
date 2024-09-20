@@ -1,4 +1,3 @@
-use commands::{assistant, crud, history};
 use lazy_static::lazy_static;
 use sqlx::SqlitePool;
 use std::{path::PathBuf, str::FromStr};
@@ -25,18 +24,10 @@ mod database {
     pub mod schemas;
 }
 
+#[derive(Default)]
 struct AppState {
-    pub db: Mutex<SqlitePool>,
-    pub ai: Mutex<Option<ollama::ai::Ai>>,
-}
-
-impl AppState {
-    pub fn new(pool: SqlitePool) -> Self {
-        Self {
-            db: Mutex::new(pool),
-            ai: Mutex::new(None),
-        }
-    }
+    pub db: Option<SqlitePool>,
+    pub ai: Option<ollama::ai::Ai>,
 }
 
 lazy_static! {
@@ -48,29 +39,32 @@ lazy_static! {
 pub fn run() {
     tracing_subscriber::fmt::init();
     let _ = span!(Level::INFO, "Phallax");
+    let state = AppState::default();
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
+        .manage(Mutex::new(state))
         .invoke_handler(tauri::generate_handler![
-            assistant::completion,
-            assistant::get_chat_history,
-            assistant::init_ai,
-            history::load_history,
-            history::save_history,
-            crud::insert_assistant,
-            crud::get_assistants,
-            crud::get_assistant_by_id,
-            crud::delete_assistant,
-            crud::update_assistant,
-            crud::insert_config,
-            crud::get_configs,
-            crud::get_config_by_id,
-            crud::delete_config,
-            crud::update_config,
-            crud::insert_history,
-            crud::get_history,
-            crud::get_history_by_id,
-            crud::delete_history,
-            crud::update_history,
+            commands::assistant::completion,
+            commands::assistant::get_chat_history,
+            commands::assistant::init_ai,
+            commands::history::load_history,
+            commands::history::save_history,
+            commands::crud::connect_to_database,
+            commands::crud::insert_assistant,
+            commands::crud::get_assistants,
+            commands::crud::get_assistant_by_id,
+            commands::crud::delete_assistant,
+            commands::crud::update_assistant,
+            commands::crud::insert_config,
+            commands::crud::get_configs,
+            commands::crud::get_config_by_id,
+            commands::crud::delete_config,
+            commands::crud::update_config,
+            commands::crud::insert_history,
+            commands::crud::get_history,
+            commands::crud::get_history_by_id,
+            commands::crud::delete_history,
+            commands::crud::update_history,
         ])
         .setup(|app| {
             let db_path = app
@@ -109,8 +103,6 @@ pub fn run() {
                     .run(&pool)
                     .await
                     .expect("Failed to migrate database");
-                let state = AppState::new(pool);
-                app.manage(state);
             });
 
             Ok(())

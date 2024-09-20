@@ -1,5 +1,5 @@
 export type Config = {
-  id?: number;
+  id: number;
   temperature: number;
   num_ctx: number;
   frequency_penalty: number;
@@ -7,7 +7,7 @@ export type Config = {
 };
 
 export type FileHistory = {
-  id?: number;
+  id: number;
   file_id: string;
   name: string;
   created_at: string;
@@ -15,7 +15,7 @@ export type FileHistory = {
 };
 
 export type Assistant = {
-  id?: number;
+  id: number;
   name: string;
   instructions: string;
   config_id: number;
